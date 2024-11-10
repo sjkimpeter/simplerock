@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Clicker Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #333;
+            color: #f0f0f0;
+        }
+        #game-container {
+            text-align: center;
+            padding: 20px;
+            background-color: #444;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+            width: 320px;
+        }
+        #click-btn {
+            font-size: 24px;
+            padding: 15px 25px;
+            margin: 20px 0;
+            cursor: pointer;
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        #click-btn:hover {
+            background-color: #218838;
+        }
+        .stats, .upgrade, .auto-clicker {
+            margin: 10px 0;
+        }
+        button.upgrade-btn, button.auto-clicker-btn {
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .upgrade-btn {
+            background-color: #007bff;
+            color: #fff;
+        }
+        .upgrade-btn:hover {
+            background-color: #0069d9;
+        }
+        .auto-clicker-btn {
+            background-color: #ffc107;
+            color: #333;
+        }
+        .auto-clicker-btn:hover {
+            background-color: #e0a800;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <h1>Clicker Game</h1>
+        <div class="stats">Points: <span id="points">0</span></div>
+        <button id="click-btn">Click Me!</button>
+        <div class="upgrade">
+            <button class="upgrade-btn" id="upgrade-btn">Upgrade (Cost: 10 points)</button>
+        </div>
+        <div class="auto-clicker">
+            <button class="auto-clicker-btn" id="auto-clicker-btn">Auto Clicker (Cost: 50 points)</button>
+        </div>
+    </div>
+
+    <script>
+        let points = 0;
+        let clickValue = 1;
+        let autoClickers = 0;
+        const pointsDisplay = document.getElementById('points');
+        const clickBtn = document.getElementById('click-btn');
+        const upgradeBtn = document.getElementById('upgrade-btn');
+        const autoClickerBtn = document.getElementById('auto-clicker-btn');
+
+        // Load game state from local storage
+        function loadGame() {
+            points = parseInt(localStorage.getItem('points')) || 0;
+            clickValue = parseInt(localStorage.getItem('clickValue')) || 1;
+            autoClickers = parseInt(localStorage.getItem('autoClickers')) || 0;
+            updateUI();
+        }
+
+        // Save game state to local storage
+        function saveGame() {
+            localStorage.setItem('points', points);
+            localStorage.setItem('clickValue', clickValue);
+            localStorage.setItem('autoClickers', autoClickers);
+        }
+
+        // Update UI elements
+        function updateUI() {
+            pointsDisplay.textContent = points;
+            upgradeBtn.textContent = `Upgrade (Cost: ${10 * clickValue} points)`;
+            autoClickerBtn.textContent = `Auto Clicker (Cost: ${50 * (autoClickers + 1)} points)`;
+        }
+
+        // Click event
+        clickBtn.addEventListener('click', () => {
+            points += clickValue;
+            updateUI();
+            saveGame();
+        });
+
+        // Upgrade event
+        upgradeBtn.addEventListener('click', () => {
+            const upgradeCost = 10 * clickValue;
+            if (points >= upgradeCost) {
+                points -= upgradeCost;
+                clickValue += 1;
+                updateUI();
+                saveGame();
+            } else {
+                alert('Not enough points to upgrade!');
+            }
+        });
+
+        // Auto clicker event
+        autoClickerBtn.addEventListener('click', () => {
+            const autoClickerCost = 50 * (autoClickers + 1);
+            if (points >= autoClickerCost) {
+                points -= autoClickerCost;
+                autoClickers += 1;
+                updateUI();
+                saveGame();
+            } else {
+                alert('Not enough points for auto clicker!');
+            }
+        });
+
+        // Auto clicker function
+        setInterval(() => {
+            if (autoClickers > 0) {
+                points += autoClickers * clickValue;
+                updateUI();
+                saveGame();
+            }
+        }, 1000); // Every second, add points from auto clickers
+
+        // Load game state when page loads
+        window.onload = loadGame;
+    </script>
+</body>
+</html>
